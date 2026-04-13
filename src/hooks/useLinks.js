@@ -9,6 +9,7 @@ import {
   query,
   orderBy,
   serverTimestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useAuth } from "../context/AuthContext";
@@ -21,8 +22,6 @@ export function useLinks() {
   useEffect(() => {
     if (!user) return;
 
-    // onSnapshot mantiene los links sincronizados en tiempo real.
-    // Cada vez que algo cambia en Firestore, actualiza el estado automáticamente.
     const q = query(
       collection(db, "users", user.uid, "links"),
       orderBy("order", "asc")
@@ -55,5 +54,15 @@ export function useLinks() {
     await deleteDoc(doc(db, "users", user.uid, "links", linkId));
   }
 
-  return { links, loading, addLink, updateLink, deleteLink };
+  // Actualiza el campo order de todos los links en una sola operación atómica.
+  // writeBatch es como una transacción — o se guardan todos los cambios o ninguno.
+  async function reorderLinks(reorderedLinks) {
+    const batch = writeBatch(db);
+    reorderedLinks.forEach((link, index) => {
+      batch.update(doc(db, "users", user.uid, "links", link.id), { order: index });
+    });
+    await batch.commit();
+  }
+
+  return { links, loading, addLink, updateLink, deleteLink, reorderLinks };
 }
