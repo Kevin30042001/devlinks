@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* — Tema: Violet (default) — */
+[data-theme="violet"], :root {
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-light: rgba(124, 58, 237, 0.15);
+}
+
+/* — Tema: Cyan — */
+[data-theme="cyan"] {
+  --accent: #0891b2;
+  --accent-hover: #0e7490;
+  --accent-light: rgba(8, 145, 178, 0.15);
+}
+
+/* — Tema: Rose — */
+[data-theme="rose"] {
+  --accent: #e11d48;
+  --accent-hover: #be123c;
+  --accent-light: rgba(225, 29, 72, 0.15);
+}
+
+/* — Tema: Amber — */
+[data-theme="amber"] {
+  --accent: #d97706;
+  --accent-hover: #b45309;
+  --accent-light: rgba(217, 119, 6, 0.15);
+}
+
+/* — Tema: Emerald — */
+[data-theme="emerald"] {
+  --accent: #059669;
+  --accent-hover: #047857;
+  --accent-light: rgba(5, 150, 105, 0.15);
+}
+
+/* — Base — */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0a0a0f;
+  --bg-card: #111118;
+  --bg-input: #1a1a24;
+  --border: #2a2a3a;
+  --text: #f1f1f3;
+  --text-muted: #71717a;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}

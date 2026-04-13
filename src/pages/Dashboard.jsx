@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   DndContext,
   closestCenter,
@@ -16,8 +16,17 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useAuth } from "../context/AuthContext";
 import { useLinks } from "../hooks/useLinks";
+import "../styles/dashboard.css";
+import "../styles/auth.css";
 
-// Componente individual de cada link con soporte para drag
+const THEME_COLORS = {
+  violet: "#7c3aed",
+  cyan: "#0891b2",
+  rose: "#e11d48",
+  amber: "#d97706",
+  emerald: "#059669",
+};
+
 function SortableLink({ link, onEdit, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: link.id,
@@ -29,22 +38,23 @@ function SortableLink({ link, onEdit, onDelete }) {
   };
 
   return (
-    <li ref={setNodeRef} style={style}>
-      {/* El ícono ⠿ es el área de agarre para arrastrar */}
-      <span {...attributes} {...listeners} style={{ cursor: "grab", marginRight: 8 }}>
-        ⠿
-      </span>
-      <span>{link.title}</span>
-      <span> — {link.url}</span>
-      <span> ({link.clicks} clics)</span>
-      <button onClick={() => onEdit(link)}>Editar</button>
-      <button onClick={() => onDelete(link.id)}>Eliminar</button>
+    <li className="link-item" ref={setNodeRef} style={style}>
+      <span className="drag-handle" {...attributes} {...listeners}>⠿</span>
+      <div className="link-info">
+        <div className="link-title">{link.title}</div>
+        <div className="link-url">{link.url}</div>
+      </div>
+      <span className="link-clicks">{link.clicks} clics</span>
+      <div className="link-actions">
+        <button className="btn-icon" onClick={() => onEdit(link)}>Editar</button>
+        <button className="btn-icon btn-danger" onClick={() => onDelete(link.id)}>Eliminar</button>
+      </div>
     </li>
   );
 }
 
 function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user, userProfile, logout, updateTheme, THEMES } = useAuth();
   const { links, loading, addLink, updateLink, deleteLink, reorderLinks } = useLinks();
   const navigate = useNavigate();
 
@@ -53,8 +63,6 @@ function Dashboard() {
   const [editForm, setEditForm] = useState({ title: "", url: "" });
   const [error, setError] = useState("");
 
-  // PointerSensor requiere que el usuario arrastre al menos 8px antes de activar
-  // el drag, para no interferir con los clics en botones
   const sensors = useSensors(useSensor(PointerSensor, {
     activationConstraint: { distance: 8 },
   }));
@@ -84,12 +92,8 @@ function Dashboard() {
   async function handleDragEnd(event) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-
     const oldIndex = links.findIndex((l) => l.id === active.id);
     const newIndex = links.findIndex((l) => l.id === over.id);
-
-    // arrayMove reorganiza el array localmente para que la UI responda de inmediato,
-    // luego reorderLinks persiste el nuevo orden en Firestore
     const reordered = arrayMove(links, oldIndex, newIndex);
     await reorderLinks(reordered);
   }
@@ -99,76 +103,115 @@ function Dashboard() {
     navigate("/login");
   }
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <p style={{ padding: 24, color: "var(--text-muted)" }}>Cargando...</p>;
 
   return (
-    <div>
-      <header>
-        <h1>Hola, {user.displayName}</h1>
-        <button onClick={handleLogout}>Cerrar sesión</button>
+    <div className="dashboard">
+      <header className="dashboard-header">
+        <span className="header-logo">DevLinks</span>
+        <div className="header-actions">
+          {userProfile?.username && (
+            <Link
+              className="btn-ghost btn-sm"
+              to={`/${userProfile.username}`}
+              target="_blank"
+            >
+              Ver perfil ↗
+            </Link>
+          )}
+          <button className="btn-ghost btn-sm" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        </div>
       </header>
 
-      <section>
-        <h2>Agregar link</h2>
-        <form onSubmit={handleAdd}>
-          <input
-            type="text"
-            placeholder="Título (ej: Mi GitHub)"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            required
-          />
-          <input
-            type="url"
-            placeholder="URL (ej: https://github.com/usuario)"
-            value={form.url}
-            onChange={(e) => setForm({ ...form, url: e.target.value })}
-            required
-          />
-          {error && <p>{error}</p>}
-          <button type="submit">Agregar</button>
-        </form>
-      </section>
+      <div className="dashboard-body">
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div className="card">
+            <h2 className="card-title">Agregar link</h2>
+            <form className="add-link-form" onSubmit={handleAdd}>
+              <input
+                className="input"
+                type="text"
+                placeholder="Título (ej: Mi GitHub)"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                required
+              />
+              <input
+                className="input"
+                type="url"
+                placeholder="URL (ej: https://github.com/usuario)"
+                value={form.url}
+                onChange={(e) => setForm({ ...form, url: e.target.value })}
+                required
+              />
+              {error && <p className="auth-error">{error}</p>}
+              <button className="btn btn-primary" type="submit">Agregar</button>
+            </form>
+          </div>
 
-      <section>
-        <h2>Tus links</h2>
-        {links.length === 0 && <p>No tienes links todavía. ¡Agrega el primero!</p>}
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={links.map((l) => l.id)} strategy={verticalListSortingStrategy}>
-            <ul>
-              {links.map((link) =>
-                editingId === link.id ? (
-                  <li key={link.id}>
-                    <form onSubmit={handleUpdate}>
-                      <input
-                        type="text"
-                        value={editForm.title}
-                        onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                        required
+          <div className="card">
+            <h2 className="card-title">Tema de color</h2>
+            <div className="themes-grid">
+              {THEMES.map((theme) => (
+                <button
+                  key={theme}
+                  className={`theme-btn ${userProfile?.theme === theme ? "active" : ""}`}
+                  style={{ background: THEME_COLORS[theme] }}
+                  onClick={() => updateTheme(theme)}
+                  title={theme}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <h2 className="card-title">Tus links ({links.length})</h2>
+          {links.length === 0 ? (
+            <p className="empty-state">No tienes links todavía.<br />¡Agrega el primero!</p>
+          ) : (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={links.map((l) => l.id)} strategy={verticalListSortingStrategy}>
+                <ul className="links-list">
+                  {links.map((link) =>
+                    editingId === link.id ? (
+                      <li className="link-item" key={link.id}>
+                        <form className="edit-form" onSubmit={handleUpdate}>
+                          <input
+                            className="input"
+                            type="text"
+                            value={editForm.title}
+                            onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                            required
+                          />
+                          <input
+                            className="input"
+                            type="url"
+                            value={editForm.url}
+                            onChange={(e) => setEditForm({ ...editForm, url: e.target.value })}
+                            required
+                          />
+                          <button className="btn-icon" type="submit">✓</button>
+                          <button className="btn-icon" type="button" onClick={() => setEditingId(null)}>✕</button>
+                        </form>
+                      </li>
+                    ) : (
+                      <SortableLink
+                        key={link.id}
+                        link={link}
+                        onEdit={startEdit}
+                        onDelete={deleteLink}
                       />
-                      <input
-                        type="url"
-                        value={editForm.url}
-                        onChange={(e) => setEditForm({ ...editForm, url: e.target.value })}
-                        required
-                      />
-                      <button type="submit">Guardar</button>
-                      <button type="button" onClick={() => setEditingId(null)}>Cancelar</button>
-                    </form>
-                  </li>
-                ) : (
-                  <SortableLink
-                    key={link.id}
-                    link={link}
-                    onEdit={startEdit}
-                    onDelete={deleteLink}
-                  />
-                )
-              )}
-            </ul>
-          </SortableContext>
-        </DndContext>
-      </section>
+                    )
+                  )}
+                </ul>
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

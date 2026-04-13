@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   collection,
   query,
   orderBy,
   getDocs,
-  where,
   doc,
   getDoc,
   increment,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../services/firebase";
+import "../styles/profile.css";
 
 function Profile() {
   const { username } = useParams();
@@ -22,7 +22,6 @@ function Profile() {
 
   useEffect(() => {
     async function loadProfile() {
-      // Primero busca el uid asociado a ese username
       const usernameSnap = await getDoc(doc(db, "usernames", username));
 
       if (!usernameSnap.exists()) {
@@ -32,14 +31,14 @@ function Profile() {
       }
 
       const { uid } = usernameSnap.data();
-
       const userSnap = await getDoc(doc(db, "users", uid));
-      setProfile({ uid, ...userSnap.data() });
+      const profileData = { uid, ...userSnap.data() };
+      setProfile(profileData);
 
-      const q = query(
-        collection(db, "users", uid, "links"),
-        orderBy("order", "asc")
-      );
+      // Aplica el tema del usuario en la página de perfil público
+      document.documentElement.setAttribute("data-theme", profileData.theme || "violet");
+
+      const q = query(collection(db, "users", uid, "links"), orderBy("order", "asc"));
       const linksSnap = await getDocs(q);
       setLinks(linksSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
       setLoading(false);
@@ -49,33 +48,52 @@ function Profile() {
   }, [username]);
 
   async function handleLinkClick(link) {
-    // Incrementa el contador sin esperar la respuesta para que el clic sea inmediato
     await updateDoc(doc(db, "users", profile.uid, "links", link.id), {
       clicks: increment(1),
     });
     window.open(link.url, "_blank", "noopener,noreferrer");
   }
 
-  if (loading) return <p>Cargando...</p>;
-  if (notFound) return <p>Usuario @{username} no encontrado.</p>;
+  if (loading) return <p style={{ padding: 24, color: "var(--text-muted)" }}>Cargando...</p>;
+
+  if (notFound) {
+    return (
+      <div className="profile-not-found">
+        <h2>Usuario no encontrado</h2>
+        <p>@{username} no existe en DevLinks</p>
+        <Link to="/register" style={{ color: "var(--accent)" }}>Crea tu perfil</Link>
+      </div>
+    );
+  }
+
+  const initial = profile.name?.charAt(0).toUpperCase() || "?";
 
   return (
-    <div>
-      <h1>{profile.name}</h1>
-      <p>@{profile.username}</p>
-      {profile.bio && <p>{profile.bio}</p>}
+    <div className="profile-page">
+      <div className="profile-avatar">{initial}</div>
+      <h1 className="profile-name">{profile.name}</h1>
+      <p className="profile-username">@{profile.username}</p>
+      {profile.bio && <p className="profile-bio">{profile.bio}</p>}
 
-      <ul>
+      <ul className="profile-links">
         {links.map((link) => (
           <li key={link.id}>
-            <button onClick={() => handleLinkClick(link)}>
-              {link.title}
+            <button className="profile-link-btn" onClick={() => handleLinkClick(link)}>
+              <span>{link.title}</span>
             </button>
           </li>
         ))}
       </ul>
 
-      {links.length === 0 && <p>Este usuario no tiene links todavía.</p>}
+      {links.length === 0 && (
+        <p style={{ color: "var(--text-muted)", marginTop: 32 }}>
+          Este usuario no tiene links todavía.
+        </p>
+      )}
+
+      <p className="profile-footer">
+        Hecho con <Link to="/register">DevLinks</Link>
+      </p>
     </div>
   );
 }

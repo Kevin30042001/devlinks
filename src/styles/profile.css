@@ -1,0 +1,116 @@
+.profile-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 24px 40px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.profile-name {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.profile-username {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.profile-bio {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 320px;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.profile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+  list-style: none;
+}
+
+.profile-link-btn {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-link-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-light);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.profile-link-btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.profile-link-btn:hover::before {
+  opacity: 1;
+}
+
+.profile-link-btn span {
+  position: relative;
+}
+
+.profile-footer {
+  margin-top: 48px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.profile-footer a {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.profile-not-found {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+}
+
+.profile-not-found h2 {
+  font-size: 20px;
+  color: var(--text);
+}

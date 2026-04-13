@@ -1,0 +1,244 @@
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* — Header — */
+.dashboard-header {
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+
+.header-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+/* — Layout — */
+.dashboard-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  width: 100%;
+}
+
+/* — Card — */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: -0.3px;
+}
+
+/* — Formulario de agregar link — */
+.add-link-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* — Lista de links — */
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.link-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+
+.link-item:hover {
+  border-color: var(--accent);
+}
+
+.drag-handle {
+  color: var(--text-muted);
+  cursor: grab;
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.link-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.link-title {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-url {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-clicks {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.link-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.btn-danger:hover {
+  border-color: #e11d48;
+  color: #fb7185;
+}
+
+/* — Edit form inline — */
+.edit-form {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.edit-form .input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+/* — Temas — */
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.theme-btn {
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.theme-btn.active {
+  border-color: var(--text);
+}
+
+.theme-btn::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  opacity: 0;
+}
+
+.theme-btn.active::after {
+  opacity: 1;
+}
+
+/* — Empty state — */
+.empty-state {
+  text-align: center;
+  padding: 32px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* — Responsive — */
+@media (max-width: 700px) {
+  .dashboard-body {
+    grid-template-columns: 1fr;
+    padding: 20px 16px;
+  }
+
+  .themes-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

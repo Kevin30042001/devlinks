@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "../styles/auth.css";
 
 function Register() {
   const { register } = useAuth();
@@ -23,7 +24,6 @@ function Register() {
       return;
     }
 
-    // Username solo letras, números y guión bajo
     if (!/^[a-z0-9_]+$/.test(form.username)) {
       setError("El username solo puede tener letras minúsculas, números y _");
       return;
@@ -41,49 +41,59 @@ function Register() {
   }
 
   return (
-    <div>
-      <h1>Crear cuenta</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          type="text"
-          placeholder="Nombre completo"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="username"
-          type="text"
-          placeholder="Username (ej: kevin_dev)"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Contraseña"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        {error && <p>{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? "Creando cuenta..." : "Registrarse"}
-        </button>
-      </form>
-      <p>
-        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-      </p>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-logo">DevLinks</div>
+        <h1 className="auth-title">Crear cuenta</h1>
+        <p className="auth-subtitle">Empieza a compartir tus links</p>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <input
+            className="input"
+            name="name"
+            type="text"
+            placeholder="Nombre completo"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
+          <input
+            className="input"
+            name="username"
+            type="text"
+            placeholder="Username (ej: kevin_dev)"
+            value={form.username}
+            onChange={handleChange}
+            required
+          />
+          <input
+            className="input"
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            className="input"
+            name="password"
+            type="password"
+            placeholder="Contraseña (mín. 6 caracteres)"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+          {error && <p className="auth-error">{error}</p>}
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {loading ? "Creando cuenta..." : "Crear cuenta"}
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+        </p>
+      </div>
     </div>
   );
 }
