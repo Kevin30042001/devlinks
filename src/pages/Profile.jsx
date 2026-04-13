@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   collection,
   query,
@@ -11,10 +11,14 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../services/firebase";
+import { useAuth } from "../context/AuthContext";
 import "../styles/profile.css";
 
 function Profile() {
   const { username } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState(null);
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +39,6 @@ function Profile() {
       const profileData = { uid, ...userSnap.data() };
       setProfile(profileData);
 
-      // Aplica el tema del usuario en la página de perfil público
       document.documentElement.setAttribute("data-theme", profileData.theme || "violet");
 
       const q = query(collection(db, "users", uid, "links"), orderBy("order", "asc"));
@@ -66,10 +69,21 @@ function Profile() {
     );
   }
 
+  const isOwner = user && profile && user.uid === profile.uid;
   const initial = profile.name?.charAt(0).toUpperCase() || "?";
 
   return (
-    <div className="profile-page">
+    <div className="profile-page" style={{ position: "relative" }}>
+      {isOwner && (
+        <button
+          className="btn-ghost btn-sm"
+          onClick={() => navigate("/dashboard")}
+          style={{ position: "absolute", top: 20, left: 24 }}
+        >
+          ← Dashboard
+        </button>
+      )}
+
       <div className="profile-avatar">{initial}</div>
       <h1 className="profile-name">{profile.name}</h1>
       <p className="profile-username">@{profile.username}</p>

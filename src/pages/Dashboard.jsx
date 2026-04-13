@@ -54,7 +54,7 @@ function SortableLink({ link, onEdit, onDelete }) {
 }
 
 function Dashboard() {
-  const { user, userProfile, logout, updateTheme, THEMES } = useAuth();
+  const { user, userProfile, logout, updateTheme, updateBio, THEMES } = useAuth();
   const { links, loading, addLink, updateLink, deleteLink, reorderLinks } = useLinks();
   const navigate = useNavigate();
 
@@ -62,6 +62,8 @@ function Dashboard() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", url: "" });
   const [error, setError] = useState("");
+  const [bio, setBio] = useState("");
+  const [bioSaved, setBioSaved] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, {
     activationConstraint: { distance: 8 },
@@ -103,6 +105,13 @@ function Dashboard() {
     navigate("/login");
   }
 
+  async function handleBioSave(e) {
+    e.preventDefault();
+    await updateBio(bio);
+    setBioSaved(true);
+    setTimeout(() => setBioSaved(false), 2000);
+  }
+
   if (loading) return <p style={{ padding: 24, color: "var(--text-muted)" }}>Cargando...</p>;
 
   return (
@@ -127,6 +136,39 @@ function Dashboard() {
 
       <div className="dashboard-body">
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div className="card">
+            <h2 className="card-title">Tu perfil</h2>
+            <form className="profile-settings-form" onSubmit={handleBioSave}>
+              <input
+                className="input"
+                type="text"
+                placeholder="Nombre visible"
+                defaultValue={userProfile?.name || ""}
+                disabled
+              />
+              <input
+                className="input"
+                type="text"
+                placeholder="@username"
+                defaultValue={`@${userProfile?.username}` || ""}
+                disabled
+              />
+              <textarea
+                className="textarea"
+                placeholder="Bio (ej: Full Stack Developer · El Salvador)"
+                defaultValue={userProfile?.bio || ""}
+                onChange={(e) => setBio(e.target.value)}
+                maxLength={120}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="btn btn-primary" type="submit" style={{ width: "auto" }}>
+                  Guardar bio
+                </button>
+                {bioSaved && <span className="save-feedback">¡Guardado!</span>}
+              </div>
+            </form>
+          </div>
+
           <div className="card">
             <h2 className="card-title">Agregar link</h2>
             <form className="add-link-form" onSubmit={handleAdd}>

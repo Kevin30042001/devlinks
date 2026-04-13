@@ -94,12 +94,18 @@ export function AuthProvider({ children }) {
     await updateDoc(doc(db, "users", user.uid), { theme });
   }
 
+  async function updateBio(bio) {
+    if (!user) return;
+    setUserProfile((prev) => ({ ...prev, bio }));
+    await updateDoc(doc(db, "users", user.uid), { bio });
+  }
+
   async function logout() {
     return signOut(auth);
   }
 
   return (
-    <AuthContext.Provider value={{ user, userProfile, loading, register, login, loginWithGoogle, logout, updateTheme, THEMES }}>
+    <AuthContext.Provider value={{ user, userProfile, loading, register, login, loginWithGoogle, logout, updateTheme, updateBio, THEMES }}>
       {!loading && children}
     </AuthContext.Provider>
   );

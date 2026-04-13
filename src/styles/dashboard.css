@@ -242,3 +242,37 @@
     grid-template-columns: repeat(5, 1fr);
   }
 }
+/* — Profile settings — */
+.profile-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.textarea:focus {
+  border-color: var(--accent);
+}
+
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.save-feedback {
+  font-size: 13px;
+  color: #34d399;
+}
