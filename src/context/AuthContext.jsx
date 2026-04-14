@@ -68,24 +68,33 @@ export function AuthProvider({ children }) {
   }
 
   async function loginWithGoogle() {
-    const { user: googleUser } = await signInWithPopup(auth, googleProvider);
-    const ref = doc(db, "users", googleUser.uid);
-    const snap = await getDoc(ref);
+  const { user: googleUser } = await signInWithPopup(auth, googleProvider);
+  const ref = doc(db, "users", googleUser.uid);
+  const snap = await getDoc(ref);
 
-    if (!snap.exists()) {
-      const baseUsername = googleUser.email.split("@")[0].replace(/[^a-z0-9_]/gi, "").toLowerCase();
-      const username = `${baseUsername}_${googleUser.uid.slice(0, 5)}`;
-      await saveUserProfile(googleUser.uid, {
-        name: googleUser.displayName || "",
-        email: googleUser.email,
-        username,
-        bio: "",
-        theme: "violet",
-      });
-    }
-
-    return googleUser;
+  if (!snap.exists()) {
+    const baseUsername = googleUser.email.split("@")[0].replace(/[^a-z0-9_]/gi, "").toLowerCase();
+    const username = `${baseUsername}_${googleUser.uid.slice(0, 5)}`;
+    await saveUserProfile(googleUser.uid, {
+      name: googleUser.displayName || "",
+      email: googleUser.email,
+      username,
+      bio: "",
+      theme: "violet",
+    });
   }
+
+  // Recarga el perfil desde Firestore después de guardar
+  // para que userProfile tenga el username correcto desde el inicio
+  const freshSnap = await getDoc(ref);
+  if (freshSnap.exists()) {
+    const profile = freshSnap.data();
+    setUserProfile(profile);
+    document.documentElement.setAttribute("data-theme", profile.theme || "violet");
+  }
+
+  return googleUser;
+}
 
   async function updateTheme(theme) {
     if (!user) return;
