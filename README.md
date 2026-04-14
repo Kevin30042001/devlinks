@@ -2,7 +2,7 @@
 
 Personal link aggregator with real-time updates, drag & drop reordering, and public profiles.
 
-![Dashboard](./screenshots/dashboard.png)
+![Dashboard](./dashboard.png)
 
 ## Demo
 
